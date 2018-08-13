@@ -1,0 +1,9 @@
+{
+  "indent_size": 2,
+  "html": {
+    "indent_size": 2,
+    "wrap_attributes": "force",
+    "end_with_newline": true,
+    "unformatted": []
+  }
+}
