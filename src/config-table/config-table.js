@@ -1,4 +1,5 @@
 import template from './config-table.template.js';
+import inputBox from '../input-box/input-box.js';
 
 export class ConfigTable extends HTMLElement {
   constructor() {
@@ -18,14 +19,23 @@ export class ConfigTable extends HTMLElement {
       let tableBody = this.shadowRoot.querySelector('tbody');
       let innerHtml = '';
       this.configData.config.forEach(element => {
-        innerHtml += `<tr> 
-      <td><input type="checkbox" value="${element.selected}"/></td>
-      <td>${element.label}</td>
-      <td>${element.field.defaultValue}</td>
-      <td>${element.description}</td>
-      </tr>`;
+        let inputBoxElement = document.createElement('input-box');
+        inputBoxElement.field = element.field;
+        let rowElement = document.createElement('tr');
+        let checkBoxcolumn = document.createElement('td');
+        checkBoxcolumn.innerHTML = `<input type="checkbox" value="${
+          element.selected
+        }"/>`;
+        let labelColumn = document.createElement('td');
+        labelColumn.innerText = element.label;
+        let descriptionColumn = document.createElement('td');
+        descriptionColumn.innerText = element.description;
+        rowElement.appendChild(checkBoxcolumn);
+        rowElement.appendChild(labelColumn);
+        rowElement.appendChild(inputBoxElement);
+        rowElement.appendChild(descriptionColumn);
+        tableBody.appendChild(rowElement);
       });
-      tableBody.innerHTML = innerHtml;
     }
   }
 }
