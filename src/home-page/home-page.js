@@ -24,7 +24,7 @@ export class HomePage extends HTMLElement {
     let configTableElement = document.createElement('config-table');
     getConfigData().then(configData => {
       console.log(configData);
-      configTableElement.setAttribute('config-data', configData);
+      configTableElement.data = configData;
       this.shadowRoot.firstElementChild.appendChild(configTableElement);
     });
   }
