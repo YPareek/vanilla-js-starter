@@ -18,13 +18,13 @@ export class ConfigTable extends HTMLElement {
     if (this.configData) {
       let tableBody = this.shadowRoot.querySelector('tbody');
       let innerHtml = '';
-      this.configData.config.forEach(element => {
+      this.configData.forEach(element => {
         let inputBoxElement = document.createElement('input-box');
         inputBoxElement.field = element.field;
         let rowElement = document.createElement('tr');
         let checkBoxcolumn = document.createElement('td');
-        checkBoxcolumn.innerHTML = `<input type="checkbox" value="${
-          element.selected
+        checkBoxcolumn.innerHTML = `<input type="checkbox" ${
+          element.selected ? 'checked = "true"' : 'checked = "false"'
         }"/>`;
         let labelColumn = document.createElement('td');
         labelColumn.innerText = element.label;
@@ -34,6 +34,7 @@ export class ConfigTable extends HTMLElement {
         rowElement.appendChild(labelColumn);
         rowElement.appendChild(inputBoxElement);
         rowElement.appendChild(descriptionColumn);
+        rowElement.disabled = !element.selected;
         tableBody.appendChild(rowElement);
       });
     }

@@ -10,31 +10,51 @@ export class HomePage extends HTMLElement {
     this.shadowRoot.appendChild(template.content.cloneNode(true));
     this.attachEventsToSearchInputs();
     this.initializeConfigTable();
+    this.configData = [];
   }
 
   attachEventsToSearchInputs() {
     let inputElements = this.shadowRoot.querySelectorAll('input');
     let searchKeyInput = inputElements[0];
-    searchKeyInput.addEventListener('change', this.onSearchKeyChange);
+    searchKeyInput.addEventListener('change', e => this.onSearchKeyChange(e));
     let searchDescInput = inputElements[1];
-    searchDescInput.addEventListener('change', this.onDescriptionKeyChange);
+    searchDescInput.addEventListener('change', e =>
+      this.onDescriptionKeyChange(e)
+    );
   }
 
   initializeConfigTable() {
-    let configTableElement = document.createElement('config-table');
     getConfigData().then(configData => {
-      console.log(configData);
-      configTableElement.data = configData;
-      this.shadowRoot.firstElementChild.appendChild(configTableElement);
+      this.configData = configData.config;
+      this.attachConfigTable(this.configData);
     });
   }
 
-  onSearchKeyChange() {
-    console.log(this.value);
+  attachConfigTable(configData) {
+    let configTableElement = document.createElement('config-table');
+    configTableElement.data = configData;
+    if (this.shadowRoot.firstElementChild.children.length > 2) {
+      this.shadowRoot.firstElementChild.removeChild(
+        this.shadowRoot.firstElementChild.children[2]
+      );
+    }
+    this.shadowRoot.firstElementChild.appendChild(configTableElement);
   }
 
-  onDescriptionKeyChange() {
-    console.log(this.value);
+  onSearchKeyChange(e) {
+    this.attachConfigTable(
+      this.configData.filter(item =>
+        item.label.toLowerCase().includes(e.target.value.toLowerCase())
+      )
+    );
+  }
+
+  onDescriptionKeyChange(e) {
+    this.attachConfigTable(
+      this.configData.filter(item =>
+        item.description.toLowerCase().includes(e.target.value.toLowerCase())
+      )
+    );
   }
 }
 

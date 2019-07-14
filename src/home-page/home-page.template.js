@@ -1,7 +1,7 @@
 const template = document.createElement('template');
 
 template.innerHTML = `
-<div>
+<div style="border: 1px solid blue;padding: 4px;">
 <input
   type="text"
   placeholder="Search key"
