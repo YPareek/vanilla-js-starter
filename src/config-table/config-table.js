@@ -1,5 +1,4 @@
 import template from './config-table.template.js';
-import inputBox from '../input-box/input-box.js';
 
 export class ConfigTable extends HTMLElement {
   constructor() {
@@ -7,11 +6,25 @@ export class ConfigTable extends HTMLElement {
 
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
+    this.shadowRoot
+      .querySelector('button')
+      .addEventListener('click', e => this.printResult());
   }
 
   async connectedCallback() {
     this.configData = this.data;
     this.generateTableHTML();
+  }
+
+  printResult() {
+    console.log(
+      this.configData.filter(data => data.selected).reduce((result, data) => {
+        result[data.label] = data.selectedValue
+          ? data.selectedValue
+          : data.field.defaultValue;
+        return result;
+      }, {})
+    );
   }
 
   generateTableHTML() {
@@ -24,8 +37,11 @@ export class ConfigTable extends HTMLElement {
         let rowElement = document.createElement('tr');
         let checkBoxcolumn = document.createElement('td');
         checkBoxcolumn.innerHTML = `<input type="checkbox" ${
-          element.selected ? 'checked = "true"' : 'checked = "false"'
-        }"/>`;
+          element.selected ? `checked` : ``
+        }/>`;
+        checkBoxcolumn.addEventListener('change', e =>
+          this.sendCheckBoxChangeEvent(e)
+        );
         let labelColumn = document.createElement('td');
         labelColumn.innerText = element.label;
         let descriptionColumn = document.createElement('td');
@@ -35,9 +51,28 @@ export class ConfigTable extends HTMLElement {
         rowElement.appendChild(inputBoxElement);
         rowElement.appendChild(descriptionColumn);
         rowElement.disabled = !element.selected;
+        rowElement.addEventListener('onValueChange', e =>
+          this.onValueChange(e)
+        );
         tableBody.appendChild(rowElement);
       });
     }
+  }
+
+  sendCheckBoxChangeEvent(e) {
+    let elementToUpdate = this.configData.find(
+      element =>
+        e.target.parentElement.parentElement.children[1].innerHTML ===
+        element.label
+    );
+    elementToUpdate.selected = e.target.checked;
+  }
+
+  onValueChange(e) {
+    let elementToUpdate = this.configData.find(
+      element => e.target.parentElement.children[1].innerHTML === element.label
+    );
+    elementToUpdate.selectedValue = e.detail;
   }
 }
 

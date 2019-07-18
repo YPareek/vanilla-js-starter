@@ -1,6 +1,5 @@
 import template from './home-page.template.js';
 import { getConfigData } from '../data.service.js';
-import ConfigTable from '../config-table/config-table.js';
 
 export class HomePage extends HTMLElement {
   constructor() {
@@ -21,6 +20,16 @@ export class HomePage extends HTMLElement {
     searchDescInput.addEventListener('change', e =>
       this.onDescriptionKeyChange(e)
     );
+    let showSelected = inputElements[2];
+    showSelected.addEventListener('change', e => this.onSelctedCheckBox(e));
+  }
+
+  onSelctedCheckBox(e) {
+    if (e.target.checked) {
+      this.attachConfigTable(this.configData.filter(data => data.selected));
+    } else {
+      this.attachConfigTable(this.configData);
+    }
   }
 
   initializeConfigTable() {
@@ -33,9 +42,9 @@ export class HomePage extends HTMLElement {
   attachConfigTable(configData) {
     let configTableElement = document.createElement('config-table');
     configTableElement.data = configData;
-    if (this.shadowRoot.firstElementChild.children.length > 2) {
+    if (this.shadowRoot.firstElementChild.children.length > 3) {
       this.shadowRoot.firstElementChild.removeChild(
-        this.shadowRoot.firstElementChild.children[2]
+        this.shadowRoot.firstElementChild.children[3]
       );
     }
     this.shadowRoot.firstElementChild.appendChild(configTableElement);
