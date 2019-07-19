@@ -10,6 +10,9 @@ export class HomePage extends HTMLElement {
     this.attachEventsToSearchInputs();
     this.initializeConfigTable();
     this.configData = [];
+    this.descriptionKey = undefined;
+    this.searchLabelKey = undefined;
+    this.showSelected = false;
   }
 
   attachEventsToSearchInputs() {
@@ -22,14 +25,6 @@ export class HomePage extends HTMLElement {
     );
     let showSelected = inputElements[2];
     showSelected.addEventListener('change', e => this.onSelctedCheckBox(e));
-  }
-
-  onSelctedCheckBox(e) {
-    if (e.target.checked) {
-      this.attachConfigTable(this.configData.filter(data => data.selected));
-    } else {
-      this.attachConfigTable(this.configData);
-    }
   }
 
   initializeConfigTable() {
@@ -50,20 +45,33 @@ export class HomePage extends HTMLElement {
     this.shadowRoot.firstElementChild.appendChild(configTableElement);
   }
 
-  onSearchKeyChange(e) {
-    this.attachConfigTable(
-      this.configData.filter(item =>
-        item.label.toLowerCase().includes(e.target.value.toLowerCase())
-      )
-    );
+  onSelctedCheckBox(e) {
+    this.showSelected = e.target.checked;
+    this.attachConfigTable(this.filterdData());
   }
 
   onDescriptionKeyChange(e) {
-    this.attachConfigTable(
-      this.configData.filter(item =>
-        item.description.toLowerCase().includes(e.target.value.toLowerCase())
-      )
+    this.descriptionKey = e.target.value.toLowerCase();
+    this.attachConfigTable(this.filterdData());
+  }
+
+  onSearchKeyChange(e) {
+    this.searchLabelKey = e.target.value.toLowerCase();
+    this.attachConfigTable(this.filterdData());
+  }
+
+  filterdData() {
+    let a = this.configData.filter(
+      item =>
+        (this.searchLabelKey
+          ? item.label.toLowerCase().includes(this.searchLabelKey)
+          : true) &&
+        (this.descriptionKey
+          ? item.label.toLowerCase().includes(this.descriptionKey)
+          : true) &&
+        (this.showSelected ? item.selected : true)
     );
+    return a;
   }
 }
 
